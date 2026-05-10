@@ -1,0 +1,79 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import Pill from '../components/Pill.astro';
+import { slugify } from '../lib/slug';
+
+type Post = CollectionEntry<'blog'>;
+
+const posts: Post[] = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+const [featured, ...rest] = posts;
+
+const byYear = new Map<number, Post[]>();
+for (const p of rest) {
+  const y = p.data.date.getFullYear();
+  if (!byYear.has(y)) byYear.set(y, []);
+  byYear.get(y)!.push(p);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+
+const categoryCounts = new Map<string, number>();
+for (const p of posts) {
+  for (const c of p.data.categories) {
+    categoryCounts.set(c, (categoryCounts.get(c) ?? 0) + 1);
+  }
+}
+const topCategories = [...categoryCounts.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 6);
+---
+<BaseLayout>
+  <section class="mb-16 sm:mb-20">
+    <p class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--fg-subtle)]">
+      An archive &middot; 2022 &mdash; 2024
+    </p>
+    <h1 class="mt-4 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+      Notes on <span class="gradient-text">cloud, Azure</span><br/>
+      and the work around them.
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-[var(--fg-muted)]">
+      A frozen archive of {posts.length} essays on Microsoft Azure, Microsoft 365, DevOps and AI &mdash;
+      written between 2022 and 2024 by Konstantinos Passadis. Ad-free, tracker-free, kept here so the work doesn&rsquo;t disappear with the old WordPress instance.
+    </p>
+
+    <div class="mt-7 flex flex-wrap items-center gap-2 text-sm">
+      <span class="text-xs uppercase tracking-wider text-[var(--fg-subtle)]">Browse</span>
+      {topCategories.map(([name, count]) => (
+        <Pill href={`/category/${slugify(name)}/`} label={`${name} · ${count}`} />
+      ))}
+    </div>
+  </section>
+
+  {featured && (
+    <section class="mb-16">
+      <div class="year-divider mb-5">
+        <span>Most recent</span>
+        <span></span>
+        <span>{featured.data.date.getFullYear()}</span>
+      </div>
+      <PostCard post={featured} featured />
+    </section>
+  )}
+
+  {years.map((year) => (
+    <section class="mb-14">
+      <div class="year-divider mb-5">
+        <span>{year}</span>
+        <span></span>
+        <span>{byYear.get(year)!.length} {byYear.get(year)!.length === 1 ? 'post' : 'posts'}</span>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {byYear.get(year)!.map((post) => <PostCard post={post} />)}
+      </div>
+    </section>
+  ))}
+</BaseLayout>

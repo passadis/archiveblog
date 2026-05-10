@@ -1,0 +1,47 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { slugify } from '../../lib/slug';
+
+type Post = CollectionEntry<'blog'>;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const groups = new Map<string, { name: string; posts: Post[] }>();
+  for (const post of posts) {
+    for (const c of post.data.categories) {
+      const slug = slugify(c);
+      if (!groups.has(slug)) groups.set(slug, { name: c, posts: [] });
+      groups.get(slug)!.posts.push(post);
+    }
+  }
+  return [...groups.entries()].map(([slug, { name, posts: list }]) => ({
+    params: { category: slug },
+    props: {
+      categoryName: name,
+      posts: list.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    },
+  }));
+}
+
+interface Props {
+  categoryName: string;
+  posts: Post[];
+}
+
+const { categoryName, posts } = Astro.props;
+---
+<BaseLayout title={`${categoryName} — category`} description={`All posts in ${categoryName}.`}>
+  <header class="mb-10">
+    <p class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--fg-subtle)]">Category</p>
+    <h1 class="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
+      <span class="gradient-text">{categoryName}</span>
+    </h1>
+    <p class="mt-3 text-[var(--fg-muted)]">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+  </header>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {posts.map((post) => <PostCard post={post} />)}
+  </div>
+</BaseLayout>

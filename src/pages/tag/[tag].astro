@@ -1,0 +1,47 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { slugify } from '../../lib/slug';
+
+type Post = CollectionEntry<'blog'>;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const groups = new Map<string, { name: string; posts: Post[] }>();
+  for (const post of posts) {
+    for (const t of post.data.tags) {
+      const slug = slugify(t);
+      if (!groups.has(slug)) groups.set(slug, { name: t, posts: [] });
+      groups.get(slug)!.posts.push(post);
+    }
+  }
+  return [...groups.entries()].map(([slug, { name, posts: list }]) => ({
+    params: { tag: slug },
+    props: {
+      tagName: name,
+      posts: list.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    },
+  }));
+}
+
+interface Props {
+  tagName: string;
+  posts: Post[];
+}
+
+const { tagName, posts } = Astro.props;
+---
+<BaseLayout title={`#${tagName} — tag`} description={`All posts tagged ${tagName}.`}>
+  <header class="mb-10">
+    <p class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--fg-subtle)]">Tag</p>
+    <h1 class="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
+      <span class="font-mono text-[var(--accent-strong)]">#</span>{tagName}
+    </h1>
+    <p class="mt-3 text-[var(--fg-muted)]">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+  </header>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {posts.map((post) => <PostCard post={post} />)}
+  </div>
+</BaseLayout>

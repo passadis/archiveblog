@@ -1,0 +1,95 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Pill from '../components/Pill.astro';
+import { slugify } from '../lib/slug';
+import { formatLong, isoDate } from '../lib/date';
+import { readingTimeMinutes } from '../lib/postUrl';
+
+interface Props {
+  post: {
+    data: {
+      title: string;
+      slug: string;
+      date: Date;
+      author: string;
+      excerpt?: string;
+      categories: string[];
+      tags: string[];
+      featuredImage?: string;
+      originalUrl?: string;
+    };
+    body?: string;
+  };
+}
+
+const { post } = Astro.props;
+const d = post.data;
+const minutes = post.body ? readingTimeMinutes(post.body) : null;
+const LEGACY_HOST = 'https://archive.cloudblogger.eu';
+const heroSrc = d.featuredImage
+  ? (d.featuredImage.startsWith('http') ? d.featuredImage : `${LEGACY_HOST}${d.featuredImage}`)
+  : null;
+---
+<BaseLayout
+  title={d.title}
+  description={d.excerpt}
+  ogType="article"
+>
+  <article>
+    <nav class="mb-8 text-xs text-[var(--fg-subtle)]">
+      <a href="/" class="hover:text-[var(--fg)] transition-colors">&larr; All posts</a>
+    </nav>
+
+    <header class="mb-10">
+      <div class="flex flex-wrap items-center gap-2 text-xs text-[var(--fg-subtle)]">
+        <time datetime={isoDate(d.date)} class="font-mono">{formatLong(d.date)}</time>
+        {minutes !== null && (
+          <>
+            <span aria-hidden="true">&middot;</span>
+            <span>{minutes} min read</span>
+          </>
+        )}
+        <span aria-hidden="true">&middot;</span>
+        <span>by {d.author === 'editor' ? 'Konstantinos' : d.author}</span>
+      </div>
+
+      <h1 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{d.title}</h1>
+
+      {d.excerpt && (
+        <p class="mt-4 text-lg text-[var(--fg-muted)] leading-relaxed">{d.excerpt}</p>
+      )}
+
+      {(d.categories.length > 0 || d.tags.length > 0) && (
+        <div class="mt-5 flex flex-wrap gap-1.5">
+          {d.categories.map((c) => (
+            <Pill href={`/category/${slugify(c)}/`} label={c} variant="accent" />
+          ))}
+          {d.tags.map((t) => (
+            <Pill href={`/tag/${slugify(t)}/`} label={`#${t}`} />
+          ))}
+        </div>
+      )}
+    </header>
+
+    {heroSrc && (
+      <figure class="mb-10 overflow-hidden rounded-xl border border-[var(--border)]">
+        <img src={heroSrc} alt="" loading="eager" decoding="async" class="w-full h-auto block" />
+      </figure>
+    )}
+
+    <div class="prose mx-auto max-w-2xl">
+      <slot />
+    </div>
+
+    {d.originalUrl && (
+      <aside class="mx-auto mt-16 max-w-2xl rounded-xl border border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_60%,transparent)] p-5 text-sm text-[var(--fg-muted)]">
+        <p>
+          Originally published at
+          <a href={d.originalUrl} class="text-[var(--accent-strong)] hover:underline" rel="noopener noreferrer">
+            {d.originalUrl.replace(/^https?:\/\//, '')}
+          </a>.
+        </p>
+      </aside>
+    )}
+  </article>
+</BaseLayout>

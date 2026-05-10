@@ -1,0 +1,38 @@
+---
+const navItems = [
+  { href: '/', label: 'Posts' },
+  { href: '/category/azure/', label: 'Azure' },
+  { href: '/category/devops/', label: 'DevOps' },
+  { href: '/category/microsoft365/', label: 'M365' },
+  { href: '/about/', label: 'About' },
+];
+const path = Astro.url.pathname;
+---
+<header class="sticky top-0 z-30 border-b border-[var(--border)] bg-[color-mix(in_oklch,var(--bg)_70%,transparent)] backdrop-blur supports-[backdrop-filter]:bg-[color-mix(in_oklch,var(--bg)_60%,transparent)]">
+  <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-3.5">
+    <a href="/" class="group inline-flex items-center gap-2.5 text-[15px] font-semibold tracking-tight">
+      <span class="relative inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface)] text-[var(--accent-strong)]">
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 18a5 5 0 1 1 .9-9.9 6 6 0 0 1 11.7 2A4.5 4.5 0 0 1 18 18Z" />
+        </svg>
+      </span>
+      <span class="text-[var(--fg)]">CloudBlogger<span class="text-[var(--fg-subtle)]">@2025</span></span>
+    </a>
+    <nav class="flex items-center gap-1 text-sm">
+      {navItems.map((item) => {
+        const active = item.href === '/' ? path === '/' : path.startsWith(item.href);
+        return (
+          <a
+            href={item.href}
+            class:list={[
+              'rounded-md px-2.5 py-1.5 transition-colors',
+              active
+                ? 'text-[var(--fg)] bg-[var(--surface-2)]'
+                : 'text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]',
+            ]}
+          >{item.label}</a>
+        );
+      })}
+    </nav>
+  </div>
+</header>

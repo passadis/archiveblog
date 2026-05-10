@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="404 — Not Found" description="That page doesn't exist in this archive.">
+  <section class="py-16 sm:py-24 text-center">
+    <p class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--fg-subtle)]">Error 404</p>
+    <h1 class="mt-4 text-5xl font-semibold tracking-tight sm:text-7xl">
+      <span class="gradient-text">Lost in the cloud.</span>
+    </h1>
+    <p class="mx-auto mt-5 max-w-md text-[var(--fg-muted)]">
+      That page isn&rsquo;t in this archive. It may have lived on the original CloudBlogger and didn&rsquo;t make the trip.
+    </p>
+    <div class="mt-8 flex items-center justify-center gap-3">
+      <a href="/" class="rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm transition hover:border-[var(--accent)] hover:text-[var(--accent-strong)]">
+        Back to all posts
+      </a>
+    </div>
+  </section>
+</BaseLayout>

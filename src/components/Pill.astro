@@ -1,0 +1,14 @@
+---
+interface Props {
+  href?: string;
+  label: string;
+  variant?: 'default' | 'accent';
+}
+const { href, label, variant = 'default' } = Astro.props;
+const className = variant === 'accent' ? 'pill text-[var(--accent-strong)]' : 'pill';
+---
+{href ? (
+  <a href={href} class={className}>{label}</a>
+) : (
+  <span class={className}>{label}</span>
+)}
