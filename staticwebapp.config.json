@@ -3,9 +3,8 @@
   "trailingSlash": "auto",
   "routes": [
     {
-      "route": "/wp-content/*",
-      "redirect": "https://archive.cloudblogger.eu/wp-content/{*}",
-      "statusCode": 302
+      "route": "/wp-content/uploads/*",
+      "rewrite": "https://storagecblog.blob.core.windows.net/cb-seo/images/tmp/{*}"
     },
     { "route": "/page/*", "redirect": "/", "statusCode": 301 },
     { "route": "/author/*", "redirect": "/", "statusCode": 301 },
