@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-
+// This is a custom remark plugin to rewrite legacy image paths from the old WordPress site
 const LEGACY_IMAGE_HOST = 'https://archive.cloudblogger.eu';
 
 function rewriteLegacyImagePaths() {

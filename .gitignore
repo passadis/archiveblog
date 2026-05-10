@@ -25,5 +25,5 @@ pnpm-debug.log*
 
 # Claude Files
 CLAUDE.md
+/docs/
 docs/
-docs/**
