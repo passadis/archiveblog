@@ -6,7 +6,6 @@
     { "route": "/author/*", "redirect": "/", "statusCode": 301 },
     { "route": "/comments/feed/", "redirect": "/", "statusCode": 301 },
     { "route": "/feed", "redirect": "/", "statusCode": 301 },
-    { "route": "/feed/", "redirect": "/", "statusCode": 301 },
     { "route": "/wp-admin/*", "statusCode": 404 },
     { "route": "/wp-login.php", "statusCode": 404 },
     { "route": "/xmlrpc.php", "statusCode": 404 }
