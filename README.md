@@ -29,9 +29,44 @@ GitHub Actions. The workflow file is in
 `.github/workflows/azure-static-web-apps.yml`. Configuration for
 routing and redirects lives in `staticwebapp.config.json`.
 
+### First-time setup
+
+1. **Create the Static Web App in Azure**
+   - Azure Portal → *Create resource* → *Static Web App*.
+   - Plan: Free.
+   - Source: *Other* (we already have a workflow committed). Picking
+     *GitHub* will make the portal try to commit its own workflow,
+     which conflicts with the one in this repo.
+   - Once created, open the resource → *Manage deployment token* →
+     copy the token.
+
+2. **Add the deployment token to GitHub**
+   - In the GitHub repo → *Settings* → *Secrets and variables* →
+     *Actions* → *New repository secret*.
+   - Name: `AZURE_STATIC_WEB_APPS_API_TOKEN` (must match the workflow).
+   - Value: the token from step 1.
+
+3. **Push to `main`**
+   - The workflow runs `npm ci`, `npm run build`, then deploys
+     `dist/` to SWA.
+   - PRs from the same repo also get a preview environment.
+
+### What's deployed
+
+| Path | Source |
+| --- | --- |
+| `staticwebapp.config.json` | Routes, redirects, security headers |
+| `dist/` (built by Astro) | All static HTML, CSS, JS, images |
+
+### Custom domain
+
+After the first deploy, in Azure Portal → SWA resource → *Custom
+domains*, add the domain (e.g. `archive.cloudblogger.eu`) and follow
+the DNS validation steps. SWA issues a free managed cert.
+
 ## Project layout
 
-```
+```text
 .
 ├── CLAUDE.md                       # Instructions for Claude Code
 ├── docs/

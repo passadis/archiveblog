@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
+  "trailingSlash": "auto",
+  "routes": [
+    { "route": "/page/*", "redirect": "/", "statusCode": 301 },
+    { "route": "/author/*", "redirect": "/", "statusCode": 301 },
+    { "route": "/comments/feed/", "redirect": "/", "statusCode": 301 },
+    { "route": "/feed", "redirect": "/", "statusCode": 301 },
+    { "route": "/feed/", "redirect": "/", "statusCode": 301 },
+    { "route": "/wp-admin/*", "statusCode": 404 },
+    { "route": "/wp-login.php", "statusCode": 404 },
+    { "route": "/xmlrpc.php", "statusCode": 404 }
+  ],
+  "responseOverrides": {
+    "404": { "rewrite": "/404.html" }
+  },
+  "globalHeaders": {
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "SAMEORIGIN",
+    "Permissions-Policy": "interest-cohort=()"
+  },
+  "mimeTypes": {
+    ".webmanifest": "application/manifest+json"
+  }
+}
