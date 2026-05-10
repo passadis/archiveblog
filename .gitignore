@@ -1,5 +1,6 @@
 # build output
 dist/
+
 # generated types
 .astro/
 
@@ -12,18 +13,15 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-
 # environment variables
 .env
-.env.production
+.env.*
+!.env.example
 
-# macOS-specific files
+# editor / OS
 .DS_Store
-
-# jetbrains setting folder
 .idea/
 
-# Claude Files
+# project-local notes (kept out of the public repo)
 CLAUDE.md
-/docs/
 docs/

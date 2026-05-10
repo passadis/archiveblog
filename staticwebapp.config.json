@@ -2,6 +2,11 @@
   "$schema": "https://json.schemastore.org/staticwebapp.config.json",
   "trailingSlash": "auto",
   "routes": [
+    {
+      "route": "/wp-content/*",
+      "redirect": "https://archive.cloudblogger.eu/wp-content/{*}",
+      "statusCode": 302
+    },
     { "route": "/page/*", "redirect": "/", "statusCode": 301 },
     { "route": "/author/*", "redirect": "/", "statusCode": 301 },
     { "route": "/comments/feed/", "redirect": "/", "statusCode": 301 },
