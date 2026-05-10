@@ -3,18 +3,24 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-// This is a custom remark plugin to rewrite legacy image paths from the old WordPress site
-const LEGACY_IMAGE_HOST = 'https://archive.cloudblogger.eu';
+// Map legacy WordPress upload paths to the blob storage where the images now live.
+// Source path:  /wp-content/uploads/2024/12/foo.jpg
+// Target URL:   https://storagecblog.blob.core.windows.net/cb-seo/images/tmp/2024/12/foo.jpg
+const BLOB_IMAGE_BASE = 'https://storagecblog.blob.core.windows.net/cb-seo/images/tmp';
+const UPLOADS_PREFIX = '/wp-content/uploads';
 
-function rewriteLegacyImagePaths() {
+function rewriteUploadsToBlob() {
   return (tree) => {
     const visit = (node) => {
       if (!node) return;
-      if (node.type === 'image' && typeof node.url === 'string' && node.url.startsWith('/wp-content/')) {
-        node.url = LEGACY_IMAGE_HOST + node.url;
+      if (node.type === 'image' && typeof node.url === 'string' && node.url.startsWith(UPLOADS_PREFIX)) {
+        node.url = BLOB_IMAGE_BASE + node.url.slice(UPLOADS_PREFIX.length);
       }
-      if (node.type === 'html' && typeof node.value === 'string' && node.value.includes('/wp-content/')) {
-        node.value = node.value.replace(/(["'])\/wp-content\//g, `$1${LEGACY_IMAGE_HOST}/wp-content/`);
+      if (node.type === 'html' && typeof node.value === 'string' && node.value.includes(UPLOADS_PREFIX)) {
+        node.value = node.value.replace(
+          /(["'])\/wp-content\/uploads\//g,
+          `$1${BLOB_IMAGE_BASE}/`
+        );
       }
       if (Array.isArray(node.children)) node.children.forEach(visit);
     };
@@ -32,7 +38,7 @@ export default defineConfig({
   integrations: [mdx(), sitemap()],
 
   markdown: {
-    remarkPlugins: [rewriteLegacyImagePaths],
+    remarkPlugins: [rewriteUploadsToBlob],
     shikiConfig: {
       themes: {
         light: 'github-light',

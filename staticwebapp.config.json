@@ -2,10 +2,6 @@
   "$schema": "https://json.schemastore.org/staticwebapp.config.json",
   "trailingSlash": "auto",
   "routes": [
-    {
-      "route": "/wp-content/uploads/*",
-      "rewrite": "https://storagecblog.blob.core.windows.net/cb-seo/images/tmp/{*}"
-    },
     { "route": "/page/*", "redirect": "/", "statusCode": 301 },
     { "route": "/author/*", "redirect": "/", "statusCode": 301 },
     { "route": "/comments/feed/", "redirect": "/", "statusCode": 301 },

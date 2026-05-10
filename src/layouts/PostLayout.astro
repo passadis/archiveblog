@@ -25,9 +25,14 @@ interface Props {
 const { post } = Astro.props;
 const d = post.data;
 const minutes = post.body ? readingTimeMinutes(post.body) : null;
-const LEGACY_HOST = 'https://archive.cloudblogger.eu';
+const BLOB_IMAGE_BASE = 'https://storagecblog.blob.core.windows.net/cb-seo/images/tmp';
+const UPLOADS_PREFIX = '/wp-content/uploads';
 const heroSrc = d.featuredImage
-  ? (d.featuredImage.startsWith('http') ? d.featuredImage : `${LEGACY_HOST}${d.featuredImage}`)
+  ? (d.featuredImage.startsWith('http')
+      ? d.featuredImage
+      : d.featuredImage.startsWith(UPLOADS_PREFIX)
+        ? `${BLOB_IMAGE_BASE}${d.featuredImage.slice(UPLOADS_PREFIX.length)}`
+        : d.featuredImage)
   : null;
 ---
 <BaseLayout
